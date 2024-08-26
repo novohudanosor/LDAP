@@ -70,3 +70,36 @@ Default principal: admin@OTUS.LAN
 Valid starting       Expires              Service principal
 08/25/2024 12:16:48  08/26/2024 11:35:38  krbtgt/OTUS.LAN@OTUS.LAN
 ```
+* Мы можем зайти в Web-интерфейс нашего FreeIPA-сервера, для этого на нашей хостой машине нужно прописать следующую строку в файле Hosts: ``` 192.168.57.10 ipa.otus.lan ```
+5. ![alt text](./Pictures/1.png)
+6. Установка на клиентские хосты пакета ipa-client:
+```
+yum install -y ipa-client
+```
+7. Клиентский хост вводится в домен с помощью скрипта ipa-client-install, который необходимо запустить на каждом из них:
+```
+ipa-client-install --mkhomedir --domain=OTUS.LAN --server=ipa.otus.lan --no-ntp -p admin -w mypassword
+```
+8. ![alt text](./Pictures/2.png)
+9. Добавление нового пользователя в домен с аутентификацией по SSH-ключам:
+```
+echo "mypassword" | ipa user-add "user" --first="Otus" --last="Test" --shell="/bin/bash" --sshpubkey="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCFy2yLxfS8beM+q0kwPtA6WjLISvz/rdkkNYxGCsZTBxLcnkzV2/XQM0PzVCSYJGiYZNMO1FR9e0cPFmvsuOSDZ/tYOdOb+aHTtjF9Z4xA7faaV7chbPqptAgtjeO6zt+KJ5U9N9NwVREiz3VBkxMJ9Yv4mRDvkuNd+ZndNdllpnzpYxUnpNTTJST1Hqk4SxCDOAFVPf9fwOA9J1V/UgfKGp9/xCpbeCMyY835h93sw5e7KBgWDtz6msSKwn0CBV2l15JD5r+lWUHBEuIE4QQjkh6ABM9oi19oeL5QTr3OGgyr6EXQA3QGYTYMWOO+/6c5PVtPRBIg/uYDy81dOlKERmOdF9UMiEJYQxSsVk5qGx8bKH2kXjNUG3Zhwmz6b9/6G+IQx3rsqr/u8k7BGt67/1RdkZk8Sz7sL2AcDsAhnRTwPUU+s80clxQLdo/lDQ/S2WKwnxbUWWkZiF23YPXQD/qvgr9Ik0KtYgDUcBbic12R4HxX7gLMX45wpNkojYGk+PjZo6xCshrrRJnVDAur1R4oP7+m+wl06W325gfBMk6x8+3odNSjkyAyYqSbUNqcOMNYjn6rcVl7wrDWu8crdjUoVzzOvN8puG+tXMxfqPrmo2OQiP2944R4QyiDeTTDluRtvAO+EDVKXdz0CdKprHYt5zDUXg3rJLCowe3U8w== root@ipa.otus.lan" --password
+```
+10. При включенном фаерволле, должно быть так:
+```
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=https
+firewall-cmd --permanent --add-service=ldap
+firewall-cmd --permanent --add-service=ldaps
+firewall-cmd --permanent --add-service=kerberos
+firewall-cmd --permanent --add-service=kpasswd
+firewall-cmd --permanent --add-service=dns
+firewall-cmd --permanent --add-service=ntp
+```
+
+
+
+
+
+
+
